@@ -1,0 +1,17 @@
+{
+  "name": "invertus/reversio",
+  "description": "Revers.io",
+  "autoload": {
+    "psr-4": {
+      "ReversIO\\": "src/"
+    },
+    "classmap":  ["src/Entity/ProductForExport.php", "src/Entity/CategoryMap.php"]
+  },
+  "require": {
+    "guzzlehttp/guzzle": "~4.0 | ~5.0",
+    "symfony/yaml": "~2.8",
+    "symfony/config": "~2.8",
+    "symfony/dependency-injection": "~2.8",
+    "symfony/http-foundation": "^3.4"
+  }
+}
