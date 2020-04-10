@@ -44,7 +44,6 @@ class MultiSelect
             foreach ($orderStatuses as $orderStatus) {
                 foreach ($selectedOrdersStatusesDecoded as $selectedOrderStatus) {
                     if ($selectedOrderStatus == $orderStatus['id_order_state']) {
-                        //@todo optimizuoti koda
                         $orderStatusesSelected[$orderStatus['id_order_state']] = [
                             'id_order_state' => $orderStatus['id_order_state'],
                             'name' => $orderStatus['name'],

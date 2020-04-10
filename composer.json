@@ -8,10 +8,13 @@
     "classmap":  ["src/Entity/ProductForExport.php", "src/Entity/CategoryMap.php"]
   },
   "require": {
-    "guzzlehttp/guzzle": "~4.0 | ~5.0",
+    "guzzlehttp/guzzle": "~5.0",
     "symfony/yaml": "~2.8",
     "symfony/config": "~2.8",
     "symfony/dependency-injection": "~2.8",
     "symfony/http-foundation": "^3.4"
+  },
+  "config": {
+    "prepend-autoloader": false
   }
 }

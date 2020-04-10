@@ -97,6 +97,8 @@ class ReversIOApi
     /** @var Cache */
     private $cache;
 
+    private $listBrands = null;
+
     public function __construct(
         ProductService $productService,
         OrderRepository $orderRepository,
@@ -195,7 +197,7 @@ class ReversIOApi
         $response = new ReversIoResponse();
 
         try {
-            $url = '/catalog/models';
+            $url = 'catalog/models';
             $headers = [
                 'headers' => $this->apiHeadersBuilder->buildHeadersForGet(),
             ];
@@ -268,7 +270,6 @@ class ReversIOApi
 
         $productId = $productBody['id_product'];
 
-        //@todo change array_pop to unset by id_product
         array_pop($productBody);
 
         try {
@@ -280,7 +281,10 @@ class ReversIOApi
 
             $request = $this->proxyApiClient->put($url, $requestHeadersAndBody);
 
-            $this->exportedProductsRepository->insertExportedProducts($productId);
+            $this->exportedProductsRepository->insertExportedProducts(
+                $productId,
+                $request->getContent()['value']['id']
+            );
 
             $this->productsExportRepository->deleteFromProductsForExport($productId);
 
@@ -395,12 +399,11 @@ class ReversIOApi
                     $orderBody['orderReference'],
                     $errorMessage
                 );
-
-                $this->orderRepository->insertOrdersByState(
-                    $orderBody['orderReference'],
-                    Config::SYNCHRONIZED_UNSUCCESSFULLY_ORDERS_STATUS
-                );
             }
+            $this->orderRepository->insertOrdersByState(
+                $orderBody['orderReference'],
+                Config::SYNCHRONIZED_UNSUCCESSFULLY_ORDERS_STATUS
+            );
             $response->setSuccess(false);
             $response->setMessage($errorMessage);
         }
@@ -440,63 +443,6 @@ class ReversIOApi
             }
         }
         $response->setContent($ordersArray);
-        return $response;
-    }
-
-    /**
-     * This function is importing the orders into the Revers.io
-     * https://demo-api-portal.revers.io/docs/services/revers/operations/ImportOrder?
-     */
-    public function importOrders()
-    {
-        $response = new ReversIoResponse();
-
-        $ordersBody = $this->ordersImportService->getOrdersInformationForImport();
-
-        foreach ($ordersBody as $orderBody) {
-            try {
-                $url = 'orders';
-                $requestHeadersAndBody = [
-                    'headers' => [
-                        'Authorization' => 'Bearer '.$this->token->getToken()->getContent()['value'],
-                        'Content-Type' => 'application/json',
-                        'Ocp-Apim-Subscription-Key' => $this->apiPublic,
-                    ],
-                    'body' => json_encode($orderBody),
-                ];
-
-                $request = $this->proxyApiClient->put($url, $requestHeadersAndBody);
-
-                $this->orderRepository->insertSuccessfullyImportedOrder($orderBody['orderReference']);
-
-                $this->orderRepository->insertOrdersByState(
-                    $orderBody['orderReference'],
-                    Config::SYNCHRONIZED_SUCCESSFULLY_ORDERS_STATUS
-                );
-
-                $response->setSuccess(true);
-                $response->setContent($request);
-            } catch (\GuzzleHttp\Exception\ClientException $exception) {
-                if (Configuration::get(Config::ENABLE_LOGGING_SETTING) !== "0") {
-                    $error = json_decode($exception->getResponse()->getBody()->getContents());
-                    $errorMessageBuilder = $error->errors;
-                    $errorMessage = $errorMessageBuilder[0]->message;
-
-                    $this->logger->insertOrderLogs(
-                        $orderBody['orderReference'],
-                        $errorMessage
-                    );
-
-                    $this->orderRepository->insertOrdersByState(
-                        $orderBody['orderReference'],
-                        Config::SYNCHRONIZED_UNSUCCESSFULLY_ORDERS_STATUS
-                    );
-
-                    $response->setSuccess(false);
-                    $response->setMessage($errorMessage);
-                }
-            }
-        }
         return $response;
     }
 

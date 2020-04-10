@@ -33,6 +33,10 @@ class AdminReversIOAjaxController extends ReversIOAbstractAdminController
 {
     public function ajaxProcessImportOrdersToReversIo()
     {
+        if (Tools::getValue('token_bo') !==  Tools::getAdminTokenLite('AdminReversIOAjaxController')) {
+            die();
+        }
+
         $this->updateValues(
             Tools::getValue('orders_status'),
             Tools::getValue('orders_date_from'),
@@ -41,7 +45,6 @@ class AdminReversIOAjaxController extends ReversIOAbstractAdminController
 
         /** @var \ReversIO\Services\Orders\OrderImportService $orderImportService */
         /** @var \ReversIO\Repository\OrderRepository $orderRepository */
-        /** @var \ReversIO\Services\APIConnect\ReversIOApi $reversIoApiConnect */
         $orderImportService = $this->module->getContainer()->get('orderImportService');
         $orderRepository = $this->module->getContainer()->get('orderRepository');
 
@@ -68,13 +71,15 @@ class AdminReversIOAjaxController extends ReversIOAbstractAdminController
             'totalSum' => $sumFailed+$sumImported,
         ];
 
-        //@todo: this one is not working into 1.6
-//        $this->ajaxRender(json_encode($jsonData));
         die(json_encode($jsonData));
     }
 
     public function ajaxProcessImportOrderToReversIo()
     {
+        if (Tools::getValue('token_bo') !==  Tools::getAdminTokenLite('AdminReversIOAjaxController')) {
+            die();
+        }
+
         /** @var \ReversIO\Services\Orders\OrderImportService $orderImportService */
         /** @var \ReversIO\Repository\OrderRepository $orderRepository */
         /** @var \ReversIO\Services\APIConnect\ReversIOApi $reversIoApiConnect */
@@ -93,7 +98,7 @@ class AdminReversIOAjaxController extends ReversIOAbstractAdminController
             }
             die(json_encode($reversIoOrderImportResponse));
         } catch (Exception $e) {
-            die(json_encode($reversIoOrderImportResponse));
+            die(json_encode(['success' => false]));
         }
     }
 

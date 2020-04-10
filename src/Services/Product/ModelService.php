@@ -31,6 +31,7 @@ namespace ReversIO\Services\Product;
 use Context;
 use Product;
 use ReversIO;
+use ReversIO\Repository\ExportedProductsRepository;
 use ReversIO\Repository\OrderRepository;
 use ReversIO\Repository\ProductsForExportRepository;
 use ReversIO\Response\ReversIoResponse;
@@ -59,18 +60,23 @@ class ModelService
     /** @var Cache */
     private $cache;
 
+    /** @var ExportedProductsRepository */
+    private $exportedProductsRepository;
+
     public function __construct(
         ReversIO $module,
         OrderRepository $orderRepository,
         ProductsForExportRepository $productsExportRepository,
         ReversIOApi $reversIoApiConnect,
-        Cache $cache
+        Cache $cache,
+        ExportedProductsRepository $exportedProductsRepository
     ) {
         $this->module = $module;
         $this->orderRepository = $orderRepository;
         $this->productsExportRepository = $productsExportRepository;
         $this->reversIoApiConnect = $reversIoApiConnect;
         $this->cache = $cache;
+        $this->exportedProductsRepository = $exportedProductsRepository;
     }
 
     public function getModelsIds($orderId, $currency)
@@ -103,7 +109,6 @@ class ModelService
         return $modelIdArray;
     }
 
-    //@todo check the naming, kad butu aisku, kad sukurs ar updatins ir comment for the  function return
     private function getProductModelId($productId)
     {
         $listModelsResponse = $this->cache->getListModels();
@@ -112,20 +117,34 @@ class ModelService
             return $listModelsResponse;
         }
 
-        $modelIdResponse = $this->getProductModelIdIfAlreadyExported($productId, $listModelsResponse);
+        $modelIdResponse = new ReversIoResponse();
 
-//        If $modelIdResponse is not successful, product not exported
-        if (!$modelIdResponse->isSuccess()) {
+        $exportedProductId = $this->exportedProductsRepository->isProductExported($productId);
+
+        if (!$exportedProductId) {
             $modelIdResponse = $this->reversIoApiConnect->putProduct($productId, Context::getContext()->language->id);
 
             $this->cache->updateModelList();
         } else {
             $productAddedForUpdate = $this->productsExportRepository->getProductForUpdateById($productId);
+            $productAddedForInsert = $this->productsExportRepository->getProductsForInsert($productId);
 
             if ($productAddedForUpdate) {
+                $exportedProduct = new ReversIO\Entity\ExportedProduct($exportedProductId);
+
                 $modelIdResponse = $this->reversIoApiConnect->updateProduct(
                     $productId,
-                    $modelIdResponse->getContent(),
+                    $exportedProduct->reversio_product_id,
+                    Context::getContext()->language->id
+                );
+
+                $this->cache->updateModelList();
+            } elseif (!$productAddedForInsert) {
+                $exportedProduct = new ReversIO\Entity\ExportedProduct($exportedProductId);
+
+                $modelIdResponse = $this->reversIoApiConnect->updateProduct(
+                    $productId,
+                    $exportedProduct->reversio_product_id,
                     Context::getContext()->language->id
                 );
 
@@ -135,36 +154,33 @@ class ModelService
 
         return $modelIdResponse;
     }
-    //@todo STANISLOVAI PERVADINK
-    private function getProductModelIdIfAlreadyExported($productId, $listModelsResponse)
-    {
-        $modelId = 0;
 
-        $product = new Product($productId);
-        $reference = $product->reference;
-
-        //@todo: create the Object for the api values setters and getters
-        foreach ($listModelsResponse->getContent()['value'] as $listModel) {
-            if (isset($listModel['sku'])) {
-                if ($listModel['sku'] == $reference) {
-                    $modelId = $listModel['id'];
-
-                    break;
-                }
-            }
-        }
-
-        //@todo: change this response for the exception and later catch the exception and
-        // in catch block put the product api
-        $response = new ReversIoResponse();
-
-        if ($modelId) {
-            $response->setSuccess(true);
-            $response->setContent($modelId);
-        } else {
-            $response->setSuccess(false);
-        }
-
-        return $response;
-    }
+//    private function getProductModelIdIfAlreadyExported($productId, $listModelsResponse)
+//    {
+//        $modelId = 0;
+//
+//        $product = new Product($productId);
+//        $reference = $product->reference;
+//
+//        foreach ($listModelsResponse->getContent()['value'] as $listModel) {
+//            if (isset($listModel['sku'])) {
+//                if ($listModel['sku'] == $reference) {
+//                    $modelId = $listModel['id'];
+//
+//                    break;
+//                }
+//            }
+//        }
+//
+//        $response = new ReversIoResponse();
+//
+//        if ($modelId) {
+//            $response->setSuccess(true);
+//            $response->setContent($modelId);
+//        } else {
+//            $response->setSuccess(false);
+//        }
+//
+//        return $response;
+//    }
 }

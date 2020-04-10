@@ -43,9 +43,9 @@ class AdminReversIOLogsController extends ReversIOAbstractAdminController
         $this->initList();
     }
 
-    public function setMedia($isNewTheme = false)
+    public function setMedia()
     {
-        parent::setMedia($isNewTheme);
+        parent::setMedia();
 
         $this->addCSS($this->module->getPathUri().'views/css/admin/logs.css');
     }
@@ -110,13 +110,14 @@ class AdminReversIOLogsController extends ReversIOAbstractAdminController
                     'id_order' => (int)$logInfo['error_log_identifier'],
                 ];
 
+                //@todo: CHANGE THIS
                 $viewUrl = $this->context->link->getAdminLink('AdminOrders', true, [], $ordersUrlParam);
             } elseif ($logInfo['type'] === Config::TYPE_SEARCH_PRODUCT) {
                 $UrlParam = [
                     'updateproduct' => 1,
                     'id_product' => (int)$logInfo['error_log_identifier'],
                 ];
-
+                //@todo: CHANGE THIS
                 $viewUrl = $this->context->link->getAdminLink('AdminProducts', true, $UrlParam);
             }
         }

@@ -26,11 +26,15 @@
  * @see       /LICENSE
  */
 
-class reversioAjaxModuleFrontController extends ModuleFrontController
+class ReversioAjaxModuleFrontController extends ModuleFrontController
 {
     public function postProcess()
     {
         parent::postProcess();
+
+        if (!$this->isTokenValid()) {
+            die();
+        }
 
         /** @var \ReversIO\Services\Orders\OrderImportService $orderImportService */
         /** @var \ReversIO\Repository\OrderRepository $orderRepository */

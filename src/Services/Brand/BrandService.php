@@ -28,20 +28,23 @@
 
 namespace ReversIO\Services\Brand;
 
+use ReversIO;
 use ReversIO\Adapter\ArrayAdapter;
 use ReversIO\Config\Config;
 use ReversIO\Repository\ProductRepository;
 
 class BrandService
 {
-    /** @var ProductRepository  */
-    private $productRepository;
+    /**
+     * @var ReversIO
+     */
+    private $module;
 
     private $arrayAdapter;
 
-    public function __construct(ProductRepository $productRepository, ArrayAdapter $arrayAdapter)
+    public function __construct(ReversIO $module, ArrayAdapter $arrayAdapter)
     {
-        $this->productRepository = $productRepository;
+        $this->module = $module;
         $this->arrayAdapter = $arrayAdapter;
     }
 
