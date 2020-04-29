@@ -31,7 +31,7 @@
 
         <div class="alert alert-info">
             {l s='Lorem Ipsum is simply dummy text of the printing and typesetting industry.' mod='reversio'}
-            {l s='Lorem Ipsum has been the industrys standard dummy text ever since the' mod='reversio'}
+            {l s='Lorem Ipsum has been the industry\'\s standard dummy text ever since the' mod='reversio'}
             {l s='1500s, when an unknown printer took a galley of type and scrambled it to' mod='reversio'}
             {l s='make a type specimen book. It has survived not only five centuries, but' mod='reversio'}
             {l s='also the leap into electronic typesetting, remaining essentially unchanged.' mod='reversio'}

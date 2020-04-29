@@ -17,6 +17,7 @@ services:
     arguments:
       - '@reversio.module'
       - '@databaseInstall'
+      - '@versions'
 
   databaseInstall:
     class: 'ReversIO\Install\DatabaseInstall'
@@ -111,7 +112,7 @@ services:
   brandService:
     class: 'ReversIO\Services\Brand\BrandService'
     arguments:
-      - '@productRepository'
+      - '@reversio.module'
       - '@arrayAdapter'
 
   modelService:
@@ -122,6 +123,7 @@ services:
       - '@productExportRepository'
       - '@reversIoApiConnect'
       - '@reversIoCache'
+      - '@exportedProductsRepository'
 
   ordersAdmin:
     class: 'ReversIO\Services\Orders\OrderListBuilder'

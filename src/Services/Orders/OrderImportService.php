@@ -99,15 +99,6 @@ class OrderImportService
     {
         try {
             $ordersBody = $this->ordersImportRequestService->getOrderInformationForImport($idOrder);
-            if ($ordersBody === false) {
-//                if (Configuration::get(Config::ENABLE_LOGGING_SETTING) !== "0") {
-//                    $this->logger->insertOrderLogs(
-//                        $orderBody['orderReference'],
-//                        $errorMessage
-//                    );
-//                }
-                throw new \Exception('Order import failed');
-            }
             $response = $this->reversIoApiConnect->importOrderRequest($ordersBody);
         } catch (\Exception $e) {
             throw new \Exception('Order import failed');

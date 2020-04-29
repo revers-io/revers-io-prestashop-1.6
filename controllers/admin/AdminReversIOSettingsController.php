@@ -36,6 +36,8 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
     /** @var ReversIO */
     public $module;
 
+    public $renderBottom = true;
+
     public function __construct()
     {
         $this->bootstrap = true;
@@ -66,23 +68,24 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
             )
         );
 
-//        parent::init();
+        if ($this->renderBottom) {
+            if (!Tools::isSubmit('submitReversIOAuthentication')) {
+                parent::init();
+                if ($this->navigation) {
+                    $this->renderBottom = false;
+                    $this->content .= $this->renderNavigationBottom();
+                }
 
-        if (!Tools::isSubmit('submitReversIOAuthentication')) {
-            parent::init();
-            if ($this->navigation) {
-                $this->content .= $this->renderNavigationBottom();
+                $this->context->smarty->assign('content', $this->content);
+            } else {
+                parent::init();
             }
-
-            $this->context->smarty->assign('content', $this->content);
-        } else {
-            parent::init();
         }
     }
 
-    public function setMedia($isNewTheme = false)
+    public function setMedia()
     {
-        parent::setMedia($isNewTheme);
+        parent::setMedia();
 
         Media::addJsDef(array(
             'orderImportAjaxUrl' => $this->context->link->getAdminLink(Config::CONTROLLER_ADMIN_AJAX),
@@ -110,16 +113,7 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
         return [
             'title' =>    $this->l('Main settings'),
             'icon' =>     'icon-cogs',
-            'description' => $this->l(
-                'Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
-                       Lorem Ipsum has been the industry\'s standard dummy text ever since the 
-                       1500s, when an unknown printer took a galley of type and scrambled it to 
-                       make a type specimen book. It has survived not only five centuries, but 
-                       also the leap into electronic typesetting, remaining essentially unchanged. 
-                       It was popularised in the 1960s with the release of Letraset sheets 
-                       containing Lorem Ipsum passages, and more recently with desktop publishing 
-                       software like Aldus PageMaker including versions of Lorem Ipsum.'
-            ),
+            'description' => $this->l('Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'),
             'fields' =>    array(
                 Config::TEST_MODE_SETTING => array(
                     'title' => $this->l('Revers.io test mode'),
@@ -155,11 +149,7 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
         return [
             'title' =>    $this->l('ORDER SETTINGS'),
             'icon' =>     'icon-cogs',
-            'description' => $this->l(
-                'This settings define the moment when your Customer will be able to proceed to returns. 
-                        Until then the Returns section on the Order page won\'t be visible. 
-                        Usually, sellers allow returns once the product was shipped.'
-            ),
+            'description' => $this->l('This settings define the moment when your Customer will be able to proceed to returns. Until then the Returns section on the Order page won\'t be visible. Usually, sellers allow returns once the product was shipped.'),
             'fields' =>    array(
                 Config::ORDERS_STATUS => array(
                     'title' => $this->l('Only orders with selected statuses will be allowed for returns'),
@@ -177,7 +167,6 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
                     'title' => $this->l('Orders import progress'),
                     'type' => 'progress',
                     'form_group_class' => 'hidden js-revers-io-orders-import',
-//                    'class' => 'js-revers-io-orders-import-progress-container',
                 ),
             ),
 
@@ -221,7 +210,6 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
                     'title' => '',
                     'type' => '',
                     'desc' =>
-                    //@todo: cia negali buti html tag'u!!!!!!!!!!!! susikurti template
                         '<a href="'.$this->context->link->getAdminLink(Config::CONTROLLER_EXPORT_LOGS).'">'
                         .$this->l('Click here to download logs').'</a>',
                 ),
@@ -246,15 +234,33 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
                 json_encode(Tools::getValue('orders_status'))
             );
 
-            Configuration::updateValue(
-                Config::ORDER_DATE_FROM,
-                Tools::getValue('orders_date_from')
-            );
+            if (!Validate::isDateFormat(Tools::getValue('orders_date_from'))) {
+                $this->errors[] = $this->l('Date value is incorrect.');
+            } else {
+                Configuration::updateValue(
+                    Config::ORDER_DATE_FROM,
+                    Tools::getValue('orders_date_from')
+                );
+            }
 
-            Configuration::updateValue(
-                Config::ORDER_DATE_TO,
-                Tools::getValue('orders_date_to')
-            );
+            if (!Validate::isDateFormat(Tools::getValue('orders_date_to'))) {
+                $this->errors[] = $this->l('Date value is incorrect.');
+            } else {
+                Configuration::updateValue(
+                    Config::ORDER_DATE_TO,
+                    Tools::getValue('orders_date_to')
+                );
+            }
+
+            if (empty($this->errors)) {
+                $this->confirmations[] = $this->l('Succesfully updated.');
+            }
+
+            $this->init();
+//            $this->redirect_after = $this->confirmations;
+//            $this->setRedirectAfter($this->context->link->getAdminLink(Config::CONTROLLER_CONFIGURATION));
+//            $this->redirectWithNotifications($this->context->link->getAdminLink(Config::CONTROLLER_CONFIGURATION));
+//            Tools::redirectAdmin($this->context->link->getAdminLink(Config::CONTROLLER_CONFIGURATION));
         }
 
         if (Tools::isSubmit('submitReversIoLogs')) {
@@ -266,16 +272,16 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
                 Config::STORE_LOGS,
                 Tools::getValue('REVERS_IO_STORE_LOGS')
             );
+
+            $this->confirmations[] = $this->l('Succesfully updated.');
         }
 
         $this->processPassword();
 
         /** @var APIAuthentication $settingAuthentication */
         /** @var  \ReversIO\Services\Decoder\Decoder $decoder */
-        //@todo: add the prefix for all services
         $settingAuthentication = $this->module->getContainer()->get('autentification');
         $decoder = $this->module->getContainer()->get('reversio_decoder');
-
 
         /** @var TabRepository $tab */
         $tab = $this->module->getContainer()->get('tabRepository');
@@ -291,16 +297,19 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
         }
 
         if (Tools::isSubmit('submitReversIOAuthentication') &&
-            (Tools::isSubmit(Config::PUBLIC_KEY) && Tools::isSubmit(Config::SECRET_KEY))) {
+            (Tools::isSubmit(Config::PUBLIC_KEY) && Tools::isSubmit(Config::SECRET_KEY))
+        ) {
             $passwordPlaceholder = $this->getPasswordPlaceholder();
 
             if (empty(Tools::getValue(Config::SECRET_KEY))
-                || Tools::getValue(Config::SECRET_KEY) === $passwordPlaceholder) {
+                || Tools::getValue(Config::SECRET_KEY) === $passwordPlaceholder
+            ) {
                 Configuration::updateValue(
                     Config::TEST_MODE_SETTING,
                     Tools::getValue(Config::TEST_MODE_SETTING)
                 );
                 Configuration::updateValue(Config::PUBLIC_KEY, Tools::getValue(Config::PUBLIC_KEY));
+                $this->confirmations[] = $this->l('The API public key was updated.');
                 return;
             }
 
@@ -313,15 +322,11 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
 
             $authenticationResponse = $settingAuthentication->authentication(
                 Tools::getValue(Config::PUBLIC_KEY),
-                Configuration::get(Config::SECRET_KEY)
+                $decoder->base64Decoder(Configuration::get(Config::SECRET_KEY))
             );
 
             if ($authenticationResponse) {
                 $this->showHideModuleTabs(1, $parentTabId);
-                if ($this->navigation) {
-                    $this->content = $this->renderNavigationTop();
-                    $this->content .= $this->renderNavigationBottom();
-                }
                 $this->confirmations[] = $this->l('Successfully connected to Revers.io API.');
             }
 

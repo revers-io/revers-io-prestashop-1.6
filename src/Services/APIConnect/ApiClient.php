@@ -47,19 +47,12 @@ class ApiClient implements ApiClientInterface
 
     public function get($url, $headers)
     {
-        $client = new \GuzzleHttp\Client();
-
-        $apiUrlBase = Config::API_URL_BASE_LIVE;
-
-        $isTestModeEnabled = (bool) Configuration::get(Config::TEST_MODE_SETTING);
-        if ($isTestModeEnabled) {
-            $apiUrlBase = Config::API_URL_BASE_DEMO;
-        }
+        $client = $this->client->getClient();
 
         $response = new ReversIoResponse();
 
         try {
-            $request = $client->get($apiUrlBase.$url, $headers);
+            $request = $client->get($url, $headers);
             $response->setSuccess(true);
             $response->setContent(json_decode($request->getBody()->__toString(), true));
         } catch (ClientException $exception) {
@@ -73,19 +66,12 @@ class ApiClient implements ApiClientInterface
 
     public function put($url, $requestHeadersAndBody)
     {
-        $client = new \GuzzleHttp\Client();
-
-        $apiUrlBase = Config::API_URL_BASE_LIVE;
-
-        $isTestModeEnabled = (bool) Configuration::get(Config::TEST_MODE_SETTING);
-        if ($isTestModeEnabled) {
-            $apiUrlBase = Config::API_URL_BASE_DEMO;
-        }
+        $client = $this->client->getClient();
 
         $response = new ReversIoResponse();
 
         try {
-            $request = $client->put($apiUrlBase.$url, $requestHeadersAndBody);
+            $request = $client->put($url, $requestHeadersAndBody);
             $response->setSuccess(true);
             $response->setContent(json_decode($request->getBody()->__toString(), true));
         } catch (ClientException $exception) {
@@ -98,19 +84,12 @@ class ApiClient implements ApiClientInterface
 
     public function post($url, $headers)
     {
-        $client = new \GuzzleHttp\Client();
-
-        $apiUrlBase = Config::API_URL_BASE_LIVE;
-
-        $isTestModeEnabled = (bool) Configuration::get(Config::TEST_MODE_SETTING);
-        if ($isTestModeEnabled) {
-            $apiUrlBase = Config::API_URL_BASE_DEMO;
-        }
+        $client = $this->client->getClient();
 
         $response = new ReversIoResponse();
 
         try {
-            $request = $client->post($apiUrlBase.$url, $headers);
+            $request = $client->post($url, $headers);
             $response->setSuccess(true);
             $response->setContent(json_decode($request->getBody()->__toString(), true));
         } catch (ClientException $exception) {

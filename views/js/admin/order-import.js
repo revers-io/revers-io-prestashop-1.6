@@ -28,26 +28,37 @@
 $(document).ready(function () {
     $('body').on('click', '.js-revers-io-order-import-button', importOrderToReversIo);
 
-    function importOrderToReversIo() {
-        console.log(initialOrderImportAjaxUrl);
+    function importOrderToReversIo(event) {
+
+        $('.js-revers-io-order-import-button').attr("disabled", true);
+
         $.ajax(initialOrderImportAjaxUrl, {
             method: 'POST',
             data: {
                 action: 'importOrderToReversIo',
                 ajax: 1,
                 orderId: $('.revers-io-order-id').val(),
+                token_bo: token_bo,
             },
             success: function (response) {
                 response = JSON.parse(response);
-                if (response.success === false) {
-                    window.location.reload();
+                if (response.success !== false) {
+                    showSuccessMessage('Order was exported successfully');
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 30);
                 } else {
-                    window.location.reload();
+                    showErrorMessage('Order was not exported to the Revers.io check error logs');
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 30);
                 }
             },
+            complete: function(){
+                $('.js-revers-io-order-import-button').attr("disabled", false);
+            },
             error: function (response) {
-                //@todo: ismesti klientui error, kad jei nuluzo ir kad try again
-                alert('Error with ajax callback, please try again initial import');
+                showErrorMessage('Something went wrong');
             }
         });
     }

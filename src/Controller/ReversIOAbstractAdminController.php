@@ -66,7 +66,7 @@ class ReversIOAbstractAdminController extends ModuleAdminController
         $decoder = $this->module->getContainer()->get('reversio_decoder');
 
         $apiPublicKey = Configuration::get(Config::PUBLIC_KEY);
-        $apiSecretKey = Configuration::get(Config::SECRET_KEY);
+        $apiSecretKey =  $decoder->base64Decoder(Configuration::get(Config::SECRET_KEY));
 
         if (!$settingAuthentication->authentication($apiPublicKey, $apiSecretKey)) {
             $this->showHideModuleTabs(0, -1);
@@ -196,6 +196,8 @@ class ReversIOAbstractAdminController extends ModuleAdminController
     {
         /** @var APIAuthentication $settingAuthentication */
         $settingAuthentication = $this->module->getContainer()->get('autentification');
+        /** @var ReversIO\Services\Decoder\Decoder $decoder */
+        $decoder = $this->module->getContainer()->get('reversio_decoder');
 
         $currentController = Tools::getValue('controller');
 
@@ -231,7 +233,7 @@ class ReversIOAbstractAdminController extends ModuleAdminController
 
             if ($settingAuthentication->authentication(
                 Configuration::get(Config::PUBLIC_KEY),
-                Configuration::get(Config::SECRET_KEY)
+                $decoder->base64Decoder(Configuration::get(Config::SECRET_KEY))
             )) {
                 $menuTab['active'] = 1;
             }

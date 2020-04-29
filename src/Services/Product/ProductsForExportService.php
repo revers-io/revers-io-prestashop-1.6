@@ -65,10 +65,6 @@ class ProductsForExportService
             return;
         }
 
-        if (!$product->state) {
-            return;
-        }
-
         $isProductAddedForExport = $this->productsForExportRepository->isProductAddedForExport($idProduct);
 
         if ($isProductAddedForExport) {
