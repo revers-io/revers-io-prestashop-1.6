@@ -55,7 +55,7 @@ class ReversIO extends Module
         $this->displayName = $this->l('Revers.io');
         $this->ps_versions_compliancy = ['min' => '1.6.1', 'max' => '1.6.1.24'];
 
-        $this->confirmUninstall = $this->l('Ar you sure you want to uninstall?');
+        $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
 
         if (Module::isInstalled('reversio')) {
             $isTestModeEnabled = (bool) Configuration::get(ReversIO\Config\Config::TEST_MODE_SETTING);
