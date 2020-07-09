@@ -26,9 +26,6 @@
  * @see       /LICENSE
  */
 
-use ReversIO\Config\Config;
-use ReversIO\Services\Autentification\APIAuthentication;
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -192,15 +189,14 @@ class ReversIO extends Module
 
     public function hookDisplayAdminOrder($params)
     {
-        /** @var APIAuthentication $settingAuthentication */
+        /** @var ReversIO\Services\Autentification\APIAuthentication $settingAuthentication */
         /** @var ReversIO\Services\Decoder\Decoder $decoder */
         $settingAuthentication = $this->getContainer()->get('autentification');
-        $decoder = $this->getContainer()->get('reversio_decoder');
 
-        $apiPublicKey = Configuration::get(Config::PUBLIC_KEY);
-        $apiSecretKey = Configuration::get(Config::SECRET_KEY);
+        $apiPublicKey = Configuration::get(ReversIO\Config\Config::PUBLIC_KEY);
+        $apiSecretKey = Configuration::get(ReversIO\Config\Config::SECRET_KEY);
 
-        if ($settingAuthentication->authentication($apiPublicKey, $decoder->base64Decoder($apiSecretKey))) {
+        if ($settingAuthentication->authentication($apiPublicKey, $apiSecretKey)) {
             $orderId = $params['id_order'];
 
             /** @var \ReversIO\Repository\OrderRepository $orderRepository */
@@ -217,7 +213,7 @@ class ReversIO extends Module
                 ));
 
                 return $this->display(__FILE__, 'views/templates/admin/hook/display-admin-order.tpl');
-            } elseif ((int)$orderStatus !== Config::SUCCESSFULLY_IMPORTED) {
+            } elseif ((int)$orderStatus !== ReversIO\Config\Config::SUCCESSFULLY_IMPORTED) {
                 $this->context->smarty->assign(array(
                     'orderId' => $orderId,
                 ));
