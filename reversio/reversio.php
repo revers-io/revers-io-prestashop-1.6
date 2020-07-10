@@ -149,8 +149,13 @@ class ReversIO extends Module
         /** @var \ReversIO\Repository\OrdersListingRepository $ordersListingRepository */
         $ordersListingRepository = $this->getContainer()->get('ordersListingRepository');
 
-        $params['select'] .= $ordersListingRepository->selectReversValues();
-        $params['join'] .= $ordersListingRepository->joinReversTables($this->context->language->id);
+        if (isset($params['select'])) {
+            $params['select'] .= $ordersListingRepository->selectReversValues();
+        }
+
+        if (isset($params['join'])) {
+            $params['join'] .= $ordersListingRepository->joinReversTables($this->context->language->id);
+        }
 
         $res = array_slice($params['fields'], 0, 8, true) +
             $listFields +
