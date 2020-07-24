@@ -39,10 +39,9 @@ class ReversIO extends Module
         $this->name = $this->l('reversio');
         $this->version = '1.0.0';
         $this->tab = 'shipping_logistics';
-        $this->author = 'Revers.io';
+        $this->author = 'Invertus';
         $this->need_instance = 0;
         $this->description = 'Revers.io';
-        $this->module_key = 'c7843c2c00feb49853bd40ff72820396';
 
         parent::__construct();
 
@@ -52,7 +51,7 @@ class ReversIO extends Module
         $this->displayName = $this->l('Revers.io');
         $this->ps_versions_compliancy = ['min' => '1.6.1', 'max' => '1.6.1.24'];
 
-        $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
+        $this->confirmUninstall = $this->l('Ar you sure you want to uninstall?');
 
         if (Module::isInstalled('reversio')) {
             $isTestModeEnabled = (bool) Configuration::get(ReversIO\Config\Config::TEST_MODE_SETTING);
@@ -198,11 +197,12 @@ class ReversIO extends Module
         /** @var ReversIO\Services\Autentification\APIAuthentication $settingAuthentication */
         /** @var ReversIO\Services\Decoder\Decoder $decoder */
         $settingAuthentication = $this->getContainer()->get('autentification');
+        $decoder = $this->getContainer()->get('reversio_decoder');
 
         $apiPublicKey = Configuration::get(ReversIO\Config\Config::PUBLIC_KEY);
         $apiSecretKey = Configuration::get(ReversIO\Config\Config::SECRET_KEY);
 
-        if ($settingAuthentication->authentication($apiPublicKey, $apiSecretKey)) {
+        if ($settingAuthentication->authentication($apiPublicKey, $decoder->base64Decoder($apiSecretKey))) {
             $orderId = $params['id_order'];
 
             /** @var \ReversIO\Repository\OrderRepository $orderRepository */

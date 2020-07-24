@@ -36,7 +36,7 @@ class NativeSessionStorageTest extends TestCase
     protected function setUp()
     {
         $this->iniSet('session.save_handler', 'files');
-        $this->iniSet('session.save_path', $this->savePath = sys_get_temp_dir().'/sftest');
+        $this->iniSet('session.save_path', $this->savePath = sys_get_temp_dir().'/sf2test');
         if (!is_dir($this->savePath)) {
             mkdir($this->savePath);
         }
@@ -145,7 +145,7 @@ class NativeSessionStorageTest extends TestCase
     {
         $this->iniSet('session.cache_limiter', 'nocache');
 
-        new NativeSessionStorage();
+        $storage = new NativeSessionStorage();
         $this->assertEquals('', ini_get('session.cache_limiter'));
     }
 
@@ -153,7 +153,7 @@ class NativeSessionStorageTest extends TestCase
     {
         $this->iniSet('session.cache_limiter', 'nocache');
 
-        new NativeSessionStorage(['cache_limiter' => 'public']);
+        $storage = new NativeSessionStorage(['cache_limiter' => 'public']);
         $this->assertEquals('public', ini_get('session.cache_limiter'));
     }
 
@@ -167,10 +167,6 @@ class NativeSessionStorageTest extends TestCase
             'cookie_httponly' => false,
         ];
 
-        if (\PHP_VERSION_ID >= 70300) {
-            $options['cookie_samesite'] = 'lax';
-        }
-
         $this->getStorage($options);
         $temp = session_get_cookie_params();
         $gco = [];
@@ -178,6 +174,8 @@ class NativeSessionStorageTest extends TestCase
         foreach ($temp as $key => $value) {
             $gco['cookie_'.$key] = $value;
         }
+
+        unset($gco['cookie_samesite']);
 
         $this->assertEquals($options, $gco);
     }

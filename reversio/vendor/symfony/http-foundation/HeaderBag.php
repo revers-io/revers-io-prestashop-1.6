@@ -121,15 +121,7 @@ class HeaderBag implements \IteratorAggregate, \Countable
         }
 
         if ($first) {
-            if (!$headers[$key]) {
-                return $default;
-            }
-
-            if (null === $headers[$key][0]) {
-                return null;
-            }
-
-            return (string) $headers[$key][0];
+            return \count($headers[$key]) ? (string) $headers[$key][0] : $default;
         }
 
         return $headers[$key];
@@ -225,7 +217,7 @@ class HeaderBag implements \IteratorAggregate, \Countable
         }
 
         if (false === $date = \DateTime::createFromFormat(DATE_RFC2822, $value)) {
-            throw new \RuntimeException(sprintf('The "%s" HTTP header is not parseable (%s).', $key, $value));
+            throw new \RuntimeException(sprintf('The %s HTTP header is not parseable (%s).', $key, $value));
         }
 
         return $date;
