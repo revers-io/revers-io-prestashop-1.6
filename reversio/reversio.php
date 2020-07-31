@@ -37,7 +37,7 @@ class ReversIO extends Module
     public function __construct()
     {
         $this->name = $this->l('reversio');
-        $this->version = '1.0.0';
+        $this->version = '1.0.1';
         $this->tab = 'shipping_logistics';
         $this->author = 'Revers.io';
         $this->need_instance = 0;
@@ -198,11 +198,12 @@ class ReversIO extends Module
         /** @var ReversIO\Services\Autentification\APIAuthentication $settingAuthentication */
         /** @var ReversIO\Services\Decoder\Decoder $decoder */
         $settingAuthentication = $this->getContainer()->get('autentification');
+        $decoder = $this->getContainer()->get('reversio_decoder');
 
         $apiPublicKey = Configuration::get(ReversIO\Config\Config::PUBLIC_KEY);
         $apiSecretKey = Configuration::get(ReversIO\Config\Config::SECRET_KEY);
 
-        if ($settingAuthentication->authentication($apiPublicKey, $apiSecretKey)) {
+        if ($settingAuthentication->authentication($apiPublicKey, $decoder->base64Decoder($apiSecretKey))) {
             $orderId = $params['id_order'];
 
             /** @var \ReversIO\Repository\OrderRepository $orderRepository */
