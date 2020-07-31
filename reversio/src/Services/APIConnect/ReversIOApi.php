@@ -535,14 +535,22 @@ class ReversIOApi
             $response->setContent($request);
         } catch (\GuzzleHttp\Exception\ClientException $exception) {
             $errorMessage = $exception->getResponse()->json()['errors'][0]['message'];
+            $errorCode = $exception->getResponse()->json()['errors'][0]['code'];
 
-            $this->logger->insertBrandLogs(
-                $brandName,
-                $errorMessage
-            );
-
-            $response->setSuccess(false);
-            $response->setMessage($errorMessage);
+            if ($errorCode == 'Reverse.PublicApi.Errors.PublicApi.CreateBrandAlreadyExists')
+            {
+                $response->setSuccess(true);
+            } 
+            else
+            {
+                $this->logger->insertBrandLogs(
+                    $brandName,
+                    $errorMessage
+                );
+    
+                $response->setSuccess(false);
+                $response->setMessage($errorMessage);
+            }
         }
 
         return $response;
