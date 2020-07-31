@@ -537,12 +537,9 @@ class ReversIOApi
             $errorMessage = $exception->getResponse()->json()['errors'][0]['message'];
             $errorCode = $exception->getResponse()->json()['errors'][0]['code'];
 
-            if ($errorCode == 'Reverse.PublicApi.Errors.PublicApi.CreateBrandAlreadyExists')
-            {
+            if ($errorCode == 'Reverse.PublicApi.Errors.PublicApi.CreateBrandAlreadyExists') {
                 $response->setSuccess(true);
-            } 
-            else
-            {
+            } else {
                 $this->logger->insertBrandLogs(
                     $brandName,
                     $errorMessage
