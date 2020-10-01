@@ -86,9 +86,9 @@ class ProductService
                 "isReturnable" => true,
                 "isRepairable" => true,
                 "isTransportable" => true,
-                "isSerializable" => false,
-                "isOnSiteInterventionPossible" => false,
-                "isCumbersome" => false
+                "isSerializable" => true,
+                "isOnSiteInterventionPossible" => true,
+                "isCumbersome" => true
             ],
             "state" => 'new',
             "weight" => (float)$product->weight,
@@ -129,9 +129,9 @@ class ProductService
                 "isReturnable" => true,
                 "isRepairable" => true,
                 "isTransportable" => true,
-                "isSerializable" => false,
-                "isOnSiteInterventionPossible" => false,
-                "isCumbersome" => false
+                "isSerializable" => true,
+                "isOnSiteInterventionPossible" => true,
+                "isCumbersome" => true
             ],
             "state" => 'new',
             "weight" => (float)$product->weight,

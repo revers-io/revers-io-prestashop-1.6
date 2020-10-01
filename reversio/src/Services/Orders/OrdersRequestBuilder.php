@@ -95,15 +95,11 @@ class OrdersRequestBuilder
         $orderObject = new \Order($idOrder);
 
         $currency = new \Currency($orderObject->id_currency);
-        $EUR = Config::CURRENCY_EUR;
-        $GBP = Config::CURRENCY_GBP;
-        $id_currency = $orderObject->id_currency;
-        $iso_code = $currency->iso_code;
 
-        if ($iso_code !== $EUR && $currency->iso_code !== $GBP) {
+        if ($currency->iso_code !== Config::CURRENCY_EUR && $currency->iso_code !== Config::CURRENCY_GBP) {
             $this->logger->insertOrderLogs(
                 $orderObject->reference,
-                $this->module->l("Order {$idOrder} is not imported because the currency id_currency={$id_currency} iso_code={$iso_code} is not EUR ({$EUR}) or GBP ({$GBP}) ")
+                $this->module->l('Order is not imported because the currency is not EUR or GBP')
             );
             $this->orderRepository->insertOrdersByState(
                 $orderObject->reference,
@@ -203,11 +199,11 @@ class OrdersRequestBuilder
         $dateFrom = \Configuration::get(Config::ORDER_DATE_FROM);
         $dateTo = \Configuration::get(Config::ORDER_DATE_TO);
 
-        $orders = $this->orderRepository->getOrdersForImport($orderStatusesForImport, $limit, $dateFrom, $dateTo);
+        $orders = $this->orderRepository->getOrdersForImport($orderStatusesForImport, $dateFrom, $dateTo, $limit);
 
         foreach ($orders as $order) {
             $orderIds[] = [
-                'id_order' => $order['order'],
+                'id_order' => $order[_DB_PREFIX_ . 'order']
             ];
         }
 

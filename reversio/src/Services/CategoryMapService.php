@@ -120,12 +120,7 @@ class CategoryMapService
         } elseif ($categoryId === (int) Configuration::get('PS_HOME_CATEGORY')) {
             return $modelType;
         } else {
-            try {
-                $categoryParentId = $categoriesAndParentsIds[$categoryId];
-            } catch (Exception $e) {
-                return $modelType;
-            }
-            
+            $categoryParentId = $categoriesAndParentsIds[$categoryId];
 
             $modelType = $this->getModelTypeByCategory(
                 $categoryParentId,

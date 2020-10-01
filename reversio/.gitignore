@@ -1,0 +1,6 @@
+node_modules/*
+vendor/*
+img/*
+.idea
+var
+composer.lock
