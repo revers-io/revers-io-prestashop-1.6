@@ -117,16 +117,23 @@ class ModelService
             return $listModelsResponse;
         }
 
+        $existingModelIdInReversIOResponse = $this->getProductModelIdIfAlreadyExported($productId, $listModelsResponse);
+
         $modelIdResponse = new ReversIoResponse();
 
         $exportedProductId = $this->exportedProductsRepository->isProductExported($productId);
 
-
-        if (empty($exportedProductId)) { //Product not exported. Inserting
+        if (empty($exportedProductId) && !$existingModelIdInReversIOResponse->isSuccess()) { //Product not exported. Inserting
             $modelIdResponse = $this->reversIoApiConnect->putProduct($productId, Context::getContext()->language->id);
             $this->cache->updateModelList();
 
             return $modelIdResponse;
+        } else if (empty($exportedProductId)) {
+            // Not exported by prestashop, just map it to exportedProducts map
+            $this->exportedProductsRepository->insertExportedProducts(
+                $productId,
+                $existingModelIdInReversIOResponse->getContent()
+            );
         }
 
         if ($this->productsExportRepository->getProductForUpdateById($productId)) { //Product exported. Updating
@@ -150,32 +157,32 @@ class ModelService
         return $modelIdResponse;
     }
 
-//    private function getProductModelIdIfAlreadyExported($productId, $listModelsResponse)
-//    {
-//        $modelId = 0;
-//
-//        $product = new Product($productId);
-//        $reference = $product->reference;
-//
-//        foreach ($listModelsResponse->getContent()['value'] as $listModel) {
-//            if (isset($listModel['sku'])) {
-//                if ($listModel['sku'] == $reference) {
-//                    $modelId = $listModel['id'];
-//
-//                    break;
-//                }
-//            }
-//        }
-//
-//        $response = new ReversIoResponse();
-//
-//        if ($modelId) {
-//            $response->setSuccess(true);
-//            $response->setContent($modelId);
-//        } else {
-//            $response->setSuccess(false);
-//        }
-//
-//        return $response;
-//    }
+    private function getProductModelIdIfAlreadyExported($productId, $listModelsResponse)
+    {
+        $modelId = 0;
+
+        $product = new Product($productId);
+        $reference = $product->reference;
+
+        foreach ($listModelsResponse->getContent()['value'] as $listModel) {
+            if (isset($listModel['sku'])) {
+                if ($listModel['sku'] == $reference) {
+                    $modelId = $listModel['id'];
+
+                    break;
+                }
+            }
+        }
+
+        $response = new ReversIoResponse();
+
+        if ($modelId) {
+            $response->setSuccess(true);
+            $response->setContent($modelId);
+        } else {
+            $response->setSuccess(false);
+        }
+
+        return $response;
+    }
 }

@@ -104,6 +104,8 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
         $this->fields_options = [
             Config::MAIN_SETTINGS_FIELDS_OPTION_NAME => $this->getMainSettingFields(),
             Config::ORDER_SETTINGS_FIELDS_OPTION_NAME => $this->getOrderSettingsFields(),
+            Config::PRODUCT_SETTINGS_FIELDS_OPTION_NAME => $this->getProductSettingsFields(),
+//            Config::ORDER_IMPORT_FIELDS_OPTION_NAME => $this->getOrderImportFields(),
             Config::LOGS_SETTINGS_FIELDS_OPTIONS_NAME => $this->getLogsSettingsFields(),
         ];
     }
@@ -113,7 +115,7 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
         return [
             'title' =>    $this->l('Main settings'),
             'icon' =>     'icon-cogs',
-            'description' => $this->l('Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'),
+            'description' => $this->l('Revers.io is the leading solution for Returns Management in Europe. By automating and centralizing the return process, the platform optimizes the after-sales customer experience and allows merchants to save time and money.'),
             'fields' =>    array(
                 Config::TEST_MODE_SETTING => array(
                     'title' => $this->l('Revers.io test mode'),
@@ -149,7 +151,7 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
         return [
             'title' =>    $this->l('ORDER SETTINGS'),
             'icon' =>     'icon-cogs',
-            'description' => $this->l('This settings define the moment when your Customer will be able to proceed to returns. Until then the Returns section on the Order page won\'t be visible. Usually, sellers allow returns once the product was shipped.'),
+            'description' => $this->l('This setting defines the moment when your Customer will be able to proceed to returns. Until then the Returns section on the Order page won\'t be visible . Tip: usually, sellers allow returns once the product was shipped.'),
             'fields' =>    array(
                 Config::ORDERS_STATUS => array(
                     'title' => $this->l('Only orders with selected statuses will be allowed for returns'),
@@ -160,7 +162,7 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
                     'class' => 'col-lg-12'
                 ),
                 Config::ORDER_DATE_FROM => array(
-                    'title' => $this->l('Synchronise orders with Revers.io between dates'),
+                    'title' => $this->l('Synchronize orders with Revers.io between dates'),
                     'type' => 'order_date_from_to',
                 ),
                 Config::ORDERS_IMPORT_PROGRESS => array(
@@ -188,6 +190,31 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
         ];
     }
 
+    private function getProductSettingsFields()
+    {
+        return [
+            'title' =>    $this->l('PRODUCT SETTINGS'),
+            'icon' =>     'icon-cogs',
+            'description' => $this->l('This setting defines if default dimensions should be used when exporting products to Revers.io'),
+            'fields' =>    array(
+                Config::DEFAULT_DIMENSIONS => array(
+                    'title' => $this->l('Use default dimensions for products if not set'),
+                    'type' => 'bool'
+                ),
+            ),
+
+            'buttons' => array(
+                array(
+                    'title' => $this->l('Save '),
+                    'icon' => 'process-icon-save',
+                    'name' => 'submitReversIOProduct',
+                    'type' => 'submit',
+                    'class' => 'btn btn-default pull-right'
+                ),
+            ),
+        ];
+    }
+
     private function getLogsSettingsFields()
     {
         return [
@@ -204,7 +231,7 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
                     'class' => 'fixed-width-lg',
                     'cast' => 'intval',
                     'suffix' => 'days',
-                    'desc' => $this->l('Input 0 to not store logs'),
+                    'desc' => $this->l('Input 0 to store logs indefinitely'),
                 ),
                 'REVERSIODownload' => array(
                     'title' => '',
@@ -257,10 +284,6 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
             }
 
             $this->init();
-//            $this->redirect_after = $this->confirmations;
-//            $this->setRedirectAfter($this->context->link->getAdminLink(Config::CONTROLLER_CONFIGURATION));
-//            $this->redirectWithNotifications($this->context->link->getAdminLink(Config::CONTROLLER_CONFIGURATION));
-//            Tools::redirectAdmin($this->context->link->getAdminLink(Config::CONTROLLER_CONFIGURATION));
         }
 
         if (Tools::isSubmit('submitReversIoLogs')) {
@@ -272,7 +295,6 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
                 Config::STORE_LOGS,
                 Tools::getValue('REVERS_IO_STORE_LOGS')
             );
-
             $this->confirmations[] = $this->l('Succesfully updated.');
         }
 
@@ -296,6 +318,12 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
             $loggerService->deleteLogs(Configuration::get(Config::STORE_LOGS));
         }
 
+        
+        if (Tools::isSubmit('submitReversIOProduct') && Tools::isSubmit(Config::DEFAULT_DIMENSIONS))
+        {
+            Configuration::updateValue(Config::DEFAULT_DIMENSIONS, Tools::getValue(Config::DEFAULT_DIMENSIONS));
+        }
+
         if (Tools::isSubmit('submitReversIOAuthentication') &&
             (Tools::isSubmit(Config::PUBLIC_KEY) && Tools::isSubmit(Config::SECRET_KEY))
         ) {
@@ -315,7 +343,6 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
 
             Configuration::updateValue(Config::TEST_MODE_SETTING, Tools::getValue(Config::TEST_MODE_SETTING));
             Configuration::updateValue(Config::PUBLIC_KEY, Tools::getValue(Config::PUBLIC_KEY));
-
             // @codingStandardsIgnoreStart
             Configuration::updateValue(Config::SECRET_KEY, base64_encode(Tools::getValue(Config::SECRET_KEY)));
             // @codingStandardsIgnoreEnd
@@ -338,6 +365,7 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
 
             $this->displayTestModeWarning();
         }
+
 
         parent::postProcess();
     }
