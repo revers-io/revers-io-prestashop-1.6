@@ -319,8 +319,7 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
         }
 
         
-        if (Tools::isSubmit('submitReversIOProduct') && Tools::isSubmit(Config::DEFAULT_DIMENSIONS))
-        {
+        if (Tools::isSubmit('submitReversIOProduct') && Tools::isSubmit(Config::DEFAULT_DIMENSIONS)) {
             Configuration::updateValue(Config::DEFAULT_DIMENSIONS, Tools::getValue(Config::DEFAULT_DIMENSIONS));
         }
 

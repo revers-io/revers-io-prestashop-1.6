@@ -2,11 +2,11 @@
 <module>
 	<name>reversio</name>
 	<displayName><![CDATA[Revers.io]]></displayName>
-	<version><![CDATA[1.0.0]]></version>
+	<version><![CDATA[1.2.0]]></version>
 	<description><![CDATA[Revers.io]]></description>
-	<author><![CDATA[Invertus]]></author>
+	<author><![CDATA[Revers.io]]></author>
 	<tab><![CDATA[shipping_logistics]]></tab>
-	<confirmUninstall><![CDATA[Ar you sure you want to uninstall?]]></confirmUninstall>
+	<confirmUninstall><![CDATA[Are you sure you want to uninstall?]]></confirmUninstall>
 	<is_configurable>1</is_configurable>
 	<need_instance>0</need_instance>
 	<limited_countries></limited_countries>

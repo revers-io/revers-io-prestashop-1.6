@@ -74,14 +74,18 @@ class ProductService
         $width = (int) round($product->width);
         $height = (int) round($product->height);
         if ($useDefaultDimensions === "1") {
-            if ($weight <= 0)
+            if ($weight <= 0) {
                 $weight = 0.1;
-            if ($length <= 0)
+            }
+            if ($length <= 0) {
                 $length = 5;
-            if ($width <= 0)
+            }
+            if ($width <= 0) {
                 $width = 5;
-            if ($height <= 0)
+            }
+            if ($height <= 0) {
                 $height = 5;
+            }
         }
 
         $productInfoArray = [
@@ -135,14 +139,18 @@ class ProductService
         $width = (int) round($product->width);
         $height = (int) round($product->height);
         if ($useDefaultDimensions === "1") {
-            if ($weight <= 0)
+            if ($weight <= 0) {
                 $weight = 0.1;
-            if ($length <= 0)
+            }
+            if ($length <= 0) {
                 $length = 5;
-            if ($width <= 0)
+            }
+            if ($width <= 0) {
                 $width = 5;
-            if ($height <= 0)
+            }
+            if ($height <= 0) {
                 $height = 5;
+            }
         }
 
         $productUpdateInfoArray = [
