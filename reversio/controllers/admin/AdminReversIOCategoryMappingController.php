@@ -75,32 +75,23 @@ class AdminReversIOCategoryMappingController extends ReversIOAbstractAdminContro
     {
         if (Tools::isSubmit('submitCategoryMapping')) {
             /** @var \ReversIO\Services\CategoryMapService $categoryMapService */
-            /** @var \ReversIO\Repository\CategoryMapRepository $categoryMapRepository */
             $categoryMapService = $this->module->getContainer()->get('categoryMapService');
+
+            /** @var \ReversIO\Repository\CategoryMapRepository $categoryMapRepository */
             $categoryMapRepository = $this->module->getContainer()->get('categoryMapRepository');
 
-            $mappedCategoriesFromPost = $categoryMapService->formatMappedCategoriesFromPost($_POST);
+            $mappedCategoriesIds = $categoryMapService->formatMappedCategoriesFromPost($_POST);
 
-            if (empty($mappedCategoriesFromPost)) {
-                $this->errors[] = $this->module->l('No category was mapped.');
-
-                return parent::postProcess();
-            }
-
-            if (!$categoryMapRepository->deleteAllMappedCategories()) {
-                $this->errors[] = $this->module->l('Old mapped categories was not deleted.');
-
-                return parent::postProcess();
-            };
-
-            if (!$categoryMapService->saveMappedCategories($mappedCategoriesFromPost)) {
+            if (empty($mappedCategoriesIds)) {
+                $this->errors[] = $this->module->l('No category were mapped.');
+            } elseif (!$categoryMapRepository->deleteMappedCategories(array_keys($mappedCategoriesIds))) {
+                $this->errors[] = $this->module->l('Old mapped categories were not deleted.');
+            } elseif (!$categoryMapService->saveMappedCategories($mappedCategoriesIds)) {
                 $this->errors[] = $this->module->l('Failed to map categories');
-
-                return parent::postProcess();
+            } else {
+                $this->confirmations[] = $this->module->l('Successfully mapped categories');
             }
-
-            $this->confirmations[] = $this->module->l('Successfully mapped categories');
-        };
+        }
 
         return parent::postProcess();
     }

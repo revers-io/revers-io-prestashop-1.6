@@ -27,7 +27,7 @@
 
 <div class="accordion-group category-map-part">
     <div class="js-accordion-heading accordion-heading heading-container">
-        <a class="js-accordion-toggle accordion-toggle category-map-heading collapsed" data-toggle="collapse" href="#{$category.link_rewrite|escape:'htmlall':'UTF-8'}" data-category-id="{$category.id_category}">
+        <a class="js-accordion-toggle accordion-toggle category-map-heading collapsed" data-toggle="collapse" href="#{$category.link_rewrite|escape:'htmlall':'UTF-8'}" data-category-id="{$category.id_category|escape:'htmlall':'UTF-8'}">
             {if isset($category.children)}
                 <i class="icon-circle-arrow-down"></i>
             {/if}
@@ -44,6 +44,6 @@
         </select>
     </div>
 
-    <div class="reversio-category-childrens-{$category.id_category}">
+    <div class="reversio-category-childrens-{$category.id_category|escape:'htmlall':'UTF-8'}">
     </div>
 </div>
