@@ -28,6 +28,7 @@
 
 namespace ReversIO\Services\APIConnect;
 
+use Exception;
 use Configuration;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
@@ -238,6 +239,11 @@ class ReversIOApi
 
         if (!$brands->isSuccess()) {
             return $brands;
+        }
+
+        $productReference = $this->logger->getProductReference($productIdForInsert);
+        if (empty($productReference)){
+            throw new Exception('unknown product');
         }
 
         $brandObject = $brands->getContent();

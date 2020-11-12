@@ -201,6 +201,11 @@ class OrdersRequestBuilder
 
         $orders = $this->orderRepository->getOrdersForImport($orderStatusesForImport, $dateFrom, $dateTo, $limit);
 
+        if(empty($orders)) {
+            return $orderIds;
+        }
+
+
         foreach ($orders as $order) {
             $orderIds[] = [
                 'id_order' => $order[_DB_PREFIX_ . 'order']
