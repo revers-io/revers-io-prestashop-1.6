@@ -201,7 +201,7 @@ class OrdersRequestBuilder
 
         $orders = $this->orderRepository->getOrdersForImport($orderStatusesForImport, $dateFrom, $dateTo, $limit);
 
-        if(empty($orders)) {
+        if (empty($orders)) {
             return $orderIds;
         }
 

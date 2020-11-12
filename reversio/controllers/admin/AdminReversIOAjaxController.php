@@ -65,7 +65,7 @@ class AdminReversIOAjaxController extends ReversIOAbstractAdminController
             $sumImported = $sumImported + $reversIoOrderImportResponse->getTotalImported();
 
             /** Enables to break at some point if too many errors */
-            if($sumFailed > 500) {
+            if ($sumFailed > 500) {
                 break;
             }
         }

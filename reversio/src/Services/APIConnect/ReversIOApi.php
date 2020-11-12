@@ -242,7 +242,7 @@ class ReversIOApi
         }
 
         $productReference = $this->logger->getProductReference($productIdForInsert);
-        if (empty($productReference)){
+        if (empty($productReference)) {
             throw new Exception('unknown product');
         }
 
