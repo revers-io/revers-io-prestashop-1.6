@@ -4,3 +4,4 @@ img/*
 .idea
 var
 composer.lock
+/config*.xml

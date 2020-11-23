@@ -58,7 +58,6 @@ class AdminReversIOAjaxController extends ReversIOAbstractAdminController
         $sumFailed = $sumFailed + $reversIoOrderImportResponse->getTotalFailed();
         $sumImported = $sumImported + $reversIoOrderImportResponse->getTotalImported();
 
-        
         while (!$reversIoOrderImportResponse->getImportFinished()) {
             $reversIoOrderImportResponse = $orderImportService->importOrders();
             $sumFailed = $sumFailed + $reversIoOrderImportResponse->getTotalFailed();
