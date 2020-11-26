@@ -241,7 +241,7 @@ class ReversIOApi
             return $brands;
         }
 
-        $productReference = $this->logger->getProductReference($productIdForInsert);
+        $productReference = $this->productRepository->getProductReferenceById($productIdForInsert);
         if (empty($productReference)) {
             throw new Exception('unknown product');
         }
@@ -271,8 +271,7 @@ class ReversIOApi
             $productIdForInsert,
             $languageId,
             $allMappedCategories,
-            $categoriesAndParentsIds,
-            Configuration::get(Config::DEFAULT_DIMENSIONS)
+            $categoriesAndParentsIds
         );
 
         $productId = $productBody['id_product'];
@@ -328,8 +327,7 @@ class ReversIOApi
         $productBody = $this->productService->getInfoAboutProductForUpdate(
             $productIdForUpdate,
             $modelId,
-            $languageId,
-            Configuration::get(Config::DEFAULT_DIMENSIONS)
+            $languageId
         );
 
         $productId = $productBody['id_product'];

@@ -97,6 +97,7 @@ class ModelService
                         %s is not valid', $modelIdResponse->getMessage()['productReference']));
             }
 
+            //TODO fix with discounts (this does not apply price of discounts, refunding more than paid, maybe should use Cart->getProducts())
             $unitPaidPrice = $orderProductDetail['total_price_tax_incl'] / (float) $quantity;
             for ($i = 0; $i < $quantity; $i++) {
                 $modelIdArray[] =

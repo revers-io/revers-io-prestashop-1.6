@@ -28,6 +28,7 @@
 
 namespace ReversIO\Services\Product;
 
+use Configuration;
 use Context;
 use Product;
 use ReversIO\Config\Config;
@@ -37,6 +38,7 @@ class ProductService
 {
     /** @var CategoryMapService */
     private $categoryMapService;
+
     public function __construct(CategoryMapService $categoryMapService)
     {
         $this->categoryMapService = $categoryMapService;
@@ -47,8 +49,7 @@ class ProductService
         $productIdForInsert,
         $language,
         $allMappedCategories,
-        $categoriesAndParentsIds,
-        $useDefaultDimensions
+        $categoriesAndParentsIds
     ) {
         $product = new Product($productIdForInsert);
 
@@ -69,22 +70,22 @@ class ProductService
             );
         }
 
-        $weight = (float)$product->weight;
+        $weight = (float) $product->weight;
         $length = (int) round($product->depth);
         $width = (int) round($product->width);
         $height = (int) round($product->height);
-        if ($useDefaultDimensions === "1") {
+        if (Configuration::get(Config::DEFAULT_DIMENSIONS) === "1") {
             if ($weight <= 0.01) {
-                $weight = 0.1;
+                $weight = Config::DEFAULT_DIMENSION_WEIGHT;
             }
             if ($length <= 0) {
-                $length = 5;
+                $length = Config::DEFAULT_DIMENSION_LENGTH;
             }
             if ($width <= 0) {
-                $width = 5;
+                $width = Config::DEFAULT_DIMENSION_WIDTH;
             }
             if ($height <= 0) {
-                $height = 5;
+                $height = Config::DEFAULT_DIMENSION_HEIGHT;
             }
         }
 
@@ -119,7 +120,7 @@ class ProductService
         return $productInfoArray;
     }
 
-    public function getInfoAboutProductForUpdate($productIdForUpdate, $modelId, $languageId, $useDefaultDimensions)
+    public function getInfoAboutProductForUpdate($productIdForUpdate, $modelId, $languageId)
     {
         $product = new Product($productIdForUpdate);
 
@@ -138,18 +139,19 @@ class ProductService
         $length = (int) round($product->depth);
         $width = (int) round($product->width);
         $height = (int) round($product->height);
-        if ($useDefaultDimensions === "1") {
+
+        if (Configuration::get(Config::DEFAULT_DIMENSIONS) === '1') {
             if ($weight <= 0.01) {
-                $weight = 0.1;
+                $weight = Config::DEFAULT_DIMENSION_WEIGHT;
             }
             if ($length <= 0) {
-                $length = 5;
+                $length = Config::DEFAULT_DIMENSION_LENGTH;
             }
             if ($width <= 0) {
-                $width = 5;
+                $width = Config::DEFAULT_DIMENSION_WIDTH;
             }
             if ($height <= 0) {
-                $height = 5;
+                $height = Config::DEFAULT_DIMENSION_HEIGHT;
             }
         }
 

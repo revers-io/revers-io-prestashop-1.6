@@ -105,7 +105,6 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
             Config::MAIN_SETTINGS_FIELDS_OPTION_NAME => $this->getMainSettingFields(),
             Config::ORDER_SETTINGS_FIELDS_OPTION_NAME => $this->getOrderSettingsFields(),
             Config::PRODUCT_SETTINGS_FIELDS_OPTION_NAME => $this->getProductSettingsFields(),
-//            Config::ORDER_IMPORT_FIELDS_OPTION_NAME => $this->getOrderImportFields(),
             Config::LOGS_SETTINGS_FIELDS_OPTIONS_NAME => $this->getLogsSettingsFields(),
         ];
     }
@@ -193,10 +192,10 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
     private function getProductSettingsFields()
     {
         return [
-            'title' =>    $this->l('PRODUCT SETTINGS'),
-            'icon' =>     'icon-cogs',
+            'title' => $this->l('PRODUCT SETTINGS'),
+            'icon' => 'icon-cogs',
             'description' => $this->l('This setting defines if default dimensions should be used when exporting products to Revers.io'),
-            'fields' =>    array(
+            'fields' => array(
                 Config::DEFAULT_DIMENSIONS => array(
                     'title' => $this->l('Use default dimensions for products if not set'),
                     'type' => 'bool'
@@ -318,11 +317,6 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
             $loggerService->deleteLogs(Configuration::get(Config::STORE_LOGS));
         }
 
-        
-        if (Tools::isSubmit('submitReversIOProduct') && Tools::isSubmit(Config::DEFAULT_DIMENSIONS)) {
-            Configuration::updateValue(Config::DEFAULT_DIMENSIONS, Tools::getValue(Config::DEFAULT_DIMENSIONS));
-        }
-
         if (Tools::isSubmit('submitReversIOAuthentication') &&
             (Tools::isSubmit(Config::PUBLIC_KEY) && Tools::isSubmit(Config::SECRET_KEY))
         ) {
@@ -364,7 +358,6 @@ class AdminReversIOSettingsController extends ReversIOAbstractAdminController
 
             $this->displayTestModeWarning();
         }
-
 
         parent::postProcess();
     }
